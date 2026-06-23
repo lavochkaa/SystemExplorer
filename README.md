@@ -2,7 +2,7 @@
 
 iOS system monitor and internals explorer. Installs via TrollStore with extended entitlements.
 
-![Process List](screenshot.png)
+![Process List](Screenshot.png)
 
 ## Features
 
