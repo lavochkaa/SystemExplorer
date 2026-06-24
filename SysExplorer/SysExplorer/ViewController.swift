@@ -13,7 +13,6 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
 
         title = "Processes"
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -23,7 +22,7 @@ class ViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
         tableView.dataSource = self
-        
+        tableView.delegate = self
 
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -35,12 +34,11 @@ class ViewController: UIViewController {
         processes = ProcessManager.getAllProcesses() as! [SysProcessInfo]
         tableView.reloadData()
     }
-
 }
 
-extension ViewController: UITableViewDataSource {
+extension ViewController: UITableViewDataSource, UITableViewDelegate {
 
-    func tableView(_ tableView: UITableView, numberOfRowsInSection selection: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return processes.count
     }
 
@@ -51,4 +49,12 @@ extension ViewController: UITableViewDataSource {
         cell.detailTextLabel?.text = "PID: \(process.pid) | RAM: \(process.memoryBytes / 1024 / 1024) MB"
         return cell
     }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let process = processes[indexPath.row]
+        let detailVC = ProcessDetailVC(process: process)
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
+
 }
