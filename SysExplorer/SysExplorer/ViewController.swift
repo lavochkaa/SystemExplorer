@@ -10,6 +10,7 @@ import UIKit
 class ViewController: UIViewController {
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
     private let spinner = UIActivityIndicatorView(style: .large)
+    private let refreshControl = UIRefreshControl()
     private let searchController = UISearchController(searchResultsController: nil)
     private var processes: [SysProcessInfo] = []
     private var filteredProcesses: [SysProcessInfo] = []
@@ -26,7 +27,8 @@ class ViewController: UIViewController {
         searchController.obscuresBackgroundDuringPresentation = false
         navigationItem.searchController = searchController
 
-
+        refreshControl.addTarget(self, action: #selector(refreshProcesses), for: .valueChanged)
+        tableView.refreshControl = refreshControl
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
         tableView.dataSource = self
@@ -44,7 +46,7 @@ class ViewController: UIViewController {
         spinner.startAnimating()
 
         DispatchQueue.global().async {
-            let loaded = Array((ProcessManager.getAllProcesses() as! [SysProcessInfo]).prefix(10))
+            let loaded = Array((ProcessManager.getAllProcesses() as! [SysProcessInfo]).prefix(10)).filter { $0.name != "unknown"}
             DispatchQueue.main.async {
                 self.processes = loaded
                 self.filteredProcesses = loaded
@@ -53,6 +55,18 @@ class ViewController: UIViewController {
             }
         }
     }
+
+    @objc private func refreshProcesses() {
+    DispatchQueue.global().async {
+        let loaded = Array((ProcessManager.getAllProcesses() as! [SysProcessInfo]).prefix(10)).filter { $0.name != "unknown"}
+        DispatchQueue.main.async {
+            self.processes = loaded
+            self.filteredProcesses = loaded
+            self.tableView.reloadData()
+            self.refreshControl.endRefreshing()
+        }
+    }
+}
 }
 
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
