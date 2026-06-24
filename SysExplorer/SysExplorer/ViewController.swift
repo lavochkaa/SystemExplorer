@@ -9,7 +9,10 @@ import UIKit
 
 class ViewController: UIViewController {
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
+    private let spinner = UIActivityIndicatorView(style: .large)
+    private let searchController = UISearchController(searchResultsController: nil)
     private var processes: [SysProcessInfo] = []
+    private var filteredProcesses: [SysProcessInfo] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,6 +21,11 @@ class ViewController: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationBar.tintColor = .label
         view.backgroundColor = .systemBackground
+
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        navigationItem.searchController = searchController
+
 
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
@@ -31,20 +39,31 @@ class ViewController: UIViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
 
-        processes = ProcessManager.getAllProcesses() as! [SysProcessInfo]
-        tableView.reloadData()
+        view.addSubview(spinner)
+        spinner.center = view.center
+        spinner.startAnimating()
+
+        DispatchQueue.global().async {
+            let loaded = Array((ProcessManager.getAllProcesses() as! [SysProcessInfo]).prefix(10))
+            DispatchQueue.main.async {
+                self.processes = loaded
+                self.filteredProcesses = loaded
+                self.tableView.reloadData()
+                self.spinner.stopAnimating()
+            }
+        }
     }
 }
 
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return processes.count
+        return filteredProcesses.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cell")
-        let process = processes[indexPath.row]
+        let process = filteredProcesses[indexPath.row]
         cell.textLabel?.text = process.name
         cell.detailTextLabel?.text = "PID: \(process.pid) | RAM: \(process.memoryBytes / 1024 / 1024) MB"
         return cell
@@ -52,9 +71,21 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let process = processes[indexPath.row]
+        let process = filteredProcesses[indexPath.row]
         let detailVC = ProcessDetailVC(process: process)
         navigationController?.pushViewController(detailVC, animated: true)
     }
 
+}
+
+extension ViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        let query = searchController.searchBar.text ?? ""
+        if query.isEmpty {
+            filteredProcesses = processes
+        } else {
+            filteredProcesses = processes.filter { $0.name.localizedStandardContains(query)}
+        }
+        tableView.reloadData()
+    }
 }

@@ -6,7 +6,7 @@ extern int proc_listallpids(void *buffer, int buffersize);
 extern int proc_pidpath(int pid, void *buffer, uint32_t buffersize);
 
 #define PROC_PIDTASKINFO 4
-#define MAXPATHLEN 1024
+#include <sys/param.h>
 
 struct proc_taskinfo {
     uint64_t pti_virtual_size;
@@ -38,15 +38,15 @@ extern int proc_pidinfo(int pid, int flavor, uint64_t arg, void *buffer, int buf
 @implementation ProcessManager
 
 + (NSArray<SysProcessInfo *> *)getAllProcesses {
-    int count = proc_listallpids(NULL, 0);
-    if (count <= 0) return @[];
-
-    pid_t *pids = malloc(count * sizeof(pid_t));
-    count = proc_listallpids(pids, count * sizeof(pid_t));
+    // Fixed buffer to avoid blocking call with NULL on simulator
+    int maxPids = 1024;
+    pid_t *pids = malloc(maxPids * sizeof(pid_t));
+    int count = proc_listallpids(pids, maxPids * sizeof(pid_t));
+    if (count <= 0) { free(pids); return @[]; }
 
     NSMutableArray *result = [NSMutableArray array];
 
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < 10; i++) {
         pid_t pid = pids[i];
 
         char pathBuffer[MAXPATHLEN];
@@ -59,6 +59,7 @@ extern int proc_pidinfo(int pid, int flavor, uint64_t arg, void *buffer, int buf
         info.pid = pid;
         info.name = [[NSString stringWithUTF8String:pathBuffer] lastPathComponent] ?: @"unknown";
         info.memoryBytes = (ret > 0) ? taskInfo.pti_resident_size : 0;
+        info.threadCount = (ret > 0) ? taskInfo.pti_threadnum : 0;
 
         [result addObject:info];
     }

@@ -42,7 +42,8 @@ class ProcessDetailVC: UIViewController {
         sections = [
             (title: "Info", rows: [
                 (key: "PID", value: "\(process.pid)"),
-                (key: "Name", value: process.name)
+                (key: "Name", value: process.name),
+                (key: "Threads", value: "\(process.threadCount)")
             ]),
             (title: "Memory", rows: [
                 (key: "RAM", value: "\(mb) MB")
