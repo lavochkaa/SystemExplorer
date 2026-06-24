@@ -39,15 +39,18 @@ class ProcessDetailVC: UIViewController {
 
     private func buildSections() {
         let mb = process.memoryBytes / 1024 / 1024
+        let files = ProcessManager.getOpenFiles(forPid: process.pid) as! [String]
         sections = [
             (title: "Info", rows: [
                 (key: "PID", value: "\(process.pid)"),
                 (key: "Name", value: process.name),
-                (key: "Threads", value: "\(process.threadCount)")
+                (key: "Threads", value: "\(process.threadCount)"),
+                (key: "Path", value: process.path ?? "unknown")
             ]),
             (title: "Memory", rows: [
                 (key: "RAM", value: "\(mb) MB")
-            ])
+            ]),
+            (title: "Open Files", rows: files.map { (key: $0, value: "") })
         ]
     }
 }
