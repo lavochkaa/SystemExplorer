@@ -40,6 +40,9 @@ class ProcessDetailVC: UIViewController {
     private func buildSections() {
         let mb = process.memoryBytes / 1024 / 1024
         let files = ProcessManager.getOpenFiles(forPid: process.pid) as! [String]
+        let xmlString = ProcessManager.getEntitlementsForPID(process.pid) ?? ""
+        let entitnlemetsKeys = parseEntitlementKeys(from: xmlString)
+
         sections = [
             (title: "Info", rows: [
                 (key: "PID", value: "\(process.pid)"),
@@ -50,7 +53,8 @@ class ProcessDetailVC: UIViewController {
             (title: "Memory", rows: [
                 (key: "RAM", value: "\(mb) MB")
             ]),
-            (title: "Open Files", rows: files.map { (key: $0, value: "") })
+            (title: "Open Files", rows: files.map { (key: $0, value: "") }),
+            (title: "Entitlements", rows: entitnlemetsKeys.map { (key: $0, value: "")})
         ]
     }
 }
@@ -76,5 +80,22 @@ extension ProcessDetailVC: UITableViewDataSource {
         cell.detailTextLabel?.text = row.value
         cell.selectionStyle = .none
         return cell
+    }
+}
+
+extension ProcessDetailVC {
+    private func parseEntitlementKeys(from xml: String) -> [String] {
+        guard !xml.isEmpty else { return ["No entitlemets"]}
+
+        var keys: [String] = []
+        let lines = xml.components(separatedBy: "\n")
+        for line in lines {
+            let trimed = line.trimmingCharacters(in: .whitespaces)
+            if trimed.hasPrefix("<key>") && trimed.hasSuffix("</key") {
+                let key = trimed.replacingOccurrences(of: "<key>", with: "").replacingOccurrences(of: "</key>", with: "")
+                keys.append(key)
+            }
+        }
+        return keys.isEmpty ? ["No entitlements"] : keys
     }
 }

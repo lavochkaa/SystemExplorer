@@ -10,5 +10,6 @@
 
 @interface ProcessManager : NSObject
 + (NSArray<SysProcessInfo *> *)getAllProcesses;
++ (NSString *)getEntitlementsForPID:(pid_t)pid;
 + (NSArray<NSString *> *)getOpenFilesForPid:(pid_t)pid;
 @end

@@ -1,10 +1,13 @@
 #import "ProcessManager.h"
+#include <Foundation/Foundation.h>
 #include <sys/sysctl.h>
 
 // libproc.h is not in public iOS SDK, declare what we need manually
 extern int proc_listallpids(void *buffer, int buffersize);
 extern int proc_pidpath(int pid, void *buffer, uint32_t buffersize);
+extern int csops(pid_t pid, unsigned int ops, void *useraddr, size_t usersize);
 
+#define CS_OPS_ENTITLEMENTS_BLOB 7
 #define PROC_PIDTASKINFO 4
 #define PROC_PIDLISTFDS 1
 #define PROX_FDTYPE_VNODE 1
@@ -102,6 +105,17 @@ extern int proc_pidinfo(int pid, int flavor, uint64_t arg, void *buffer, int buf
     }
     free(fds);
     return result;
+}
+
++ (NSString *)getEntitlementsForPID:(pid_t)pid {
+    uint8_t buffer[8192];
+    int ret = csops(pid, CS_OPS_ENTITLEMENTS_BLOB, buffer, sizeof(buffer));
+    if (ret != 0) return @"No entitlements";
+    
+    // blob starts with 8-byte header, skip it
+    uint32_t length = ntohl(*(uint32_t *)(buffer + 4));
+    NSData *data = [NSData dataWithBytes:buffer + 8 length:length - 8];
+    return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] ?: @"Failed to parse";
 }
 
 @end
