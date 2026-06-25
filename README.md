@@ -10,18 +10,20 @@ iOS system monitor and internals explorer. Installs via TrollStore with extended
 
 ### Stage 1 — Process List ✅
 - Real-time list of all running processes
-- PID, process name, RAM usage
+- PID, process name, RAM usage, thread count
+- Search and pull-to-refresh
 - Powered by `proc_listallpids` + `proc_pidinfo` (C system calls)
 
-### Stage 2 — Process Detail (coming soon)
-- Memory regions via `mach_vm_region_recurse()`
-- Loaded dylibs
-- Open file descriptors
+### Stage 2 — Process Detail ✅
+- Open file descriptors via `proc_pidinfo(PROC_PIDLISTFDS)`
 - Entitlements via `csops`
+- Binary path and thread count
 
-### Stage 3 — Mach-O Inspector (coming soon)
-- Parse binaries: segments, sections, symbols
-- Load commands, code signing info
+### Stage 3 — Mach-O Inspector ✅
+- Architecture, file type (Executable / dylib / bundle)
+- Segments: `__TEXT`, `__DATA`, `__LINKEDIT`, etc.
+- Linked libraries list
+- Powered by `mmap` + manual Mach-O header parsing in C++
 
 ### Stage 4 — XPC Explorer (coming soon)
 - Enumerate XPC services from launchd plists
@@ -34,13 +36,19 @@ iOS system monitor and internals explorer. Installs via TrollStore with extended
 ## Stack
 
 - **UI**: Swift + UIKit
-- **System layer**: Objective-C + C
+- **System layer**: Objective-C + C/C++
 - **Build**: Xcode, iOS 15.0+, arm64
 
 ## Requirements
 
-- iPhone with [TrollStore](https://github.com/opa334/TrollStore) installed
-- iOS 15.0 – 17.x
+- iPhone/iPad with [TrollStore](https://github.com/opa334/TrollStore) installed
+- iOS 15.0+
+
+## Installation
+
+1. Download `SysExplorer.tipa` from [Releases](../../releases)
+2. Open with TrollStore
+3. Install
 
 ## Entitlements
 
