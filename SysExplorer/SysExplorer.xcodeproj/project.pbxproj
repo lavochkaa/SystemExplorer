@@ -6,7 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B28C44C12FEDD0530027BE54 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B28C44C02FEDD0530027BE54 /* IOKit.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		B28C44BE2FEDD03C0027BE54 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		B28C44C02FEDD0530027BE54 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		B2AA3E8B2FEAF8770093F45E /* SysExplorer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SysExplorer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -36,16 +42,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B28C44C12FEDD0530027BE54 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B28C44BD2FEDD03C0027BE54 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B28C44C02FEDD0530027BE54 /* IOKit.framework */,
+				B28C44BE2FEDD03C0027BE54 /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		B2AA3E822FEAF8770093F45E = {
 			isa = PBXGroup;
 			children = (
 				B2AA3E8D2FEAF8770093F45E /* SysExplorer */,
+				B28C44BD2FEDD03C0027BE54 /* Frameworks */,
 				B2AA3E8C2FEAF8770093F45E /* Products */,
 			);
 			sourceTree = "<group>";

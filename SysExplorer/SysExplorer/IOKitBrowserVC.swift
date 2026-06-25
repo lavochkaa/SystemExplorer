@@ -1,5 +1,4 @@
 import UIKit
-import IOKit
 
 class IOKitBrowserVC: UIViewController {
     
@@ -8,28 +7,8 @@ class IOKitBrowserVC: UIViewController {
 
     private func loadServices() {
         DispatchQueue.global().async {
-            let root = IORegistryGetRootEntry(kIOMasterPortDefault)
-            var iterator: io_iterator_t = 0
-
-            IORegistryEntryGetChildIterator(root, kIOServicePlane, &iterator)
-
-            var loaded: [(name: String, className: String)] = []
-            var service: io_object_t = IOIteratorNext(iterator)
-            while service != 0 {
-                var name = [CChar](repeating: 0, count: 128)
-                var className = [CChar](repeating: 0, count: 128)
-                IORegistryEntryGetName(service, &name)
-                IOObjectGetClass(service, &className)
-                loaded.append((
-                    name: String(cString: name),
-                    className: String(cString: className)
-                ))
-                IOObjectRelease(service)
-                service = IOIteratorNext(iterator)
-            }
-            IOObjectRelease(iterator)
-            IOObjectRelease(root)
-
+            let entries = IOKitExplorer.getRootEntries() as! [IOKitEntry]
+            let loaded = entries.map { (name: $0.name ?? "", className: $0.className ?? "") }
             DispatchQueue.main.async {
                 self.services = loaded
                 self.tableView.reloadData()

@@ -25,13 +25,15 @@ iOS system monitor and internals explorer. Installs via TrollStore with extended
 - Linked libraries list
 - Powered by `mmap` + manual Mach-O header parsing in C++
 
-### Stage 4 — XPC Explorer (coming soon)
-- Enumerate XPC services from launchd plists
-- Check service availability
+### Stage 4 — XPC Explorer ✅
+- Scans `/System/Library/LaunchDaemons/`
+- Parses plists and lists all MachServices
+- Background loading
 
-### Stage 5 — IOKit Browser (coming soon)
-- Full IOKit registry traversal
-- Browse classes and properties of every IOService
+### Stage 5 — IOKit Browser ✅
+- Full IOKit registry traversal up to 3 levels deep
+- Shows name and class of every IOService
+- Indented hierarchy view
 
 ## Stack
 
