@@ -1,26 +1,34 @@
 import UIKit
+import IOKit
 
-class XPCExplorerVC: UIViewController {
+class IOKitBrowserVC: UIViewController {
+    
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
-    private var services: [(name: String, label: String)] = []
+    private var services: [(name: String, className: String)] = []
 
     private func loadServices() {
         DispatchQueue.global().async {
-            let path = "/System/Library/LaunchDaemons"
-            guard let files = try? FileManager.default.contentsOfDirectory(atPath: path) else { return }
+            let root = IORegistryGetRootEntry(kIOMasterPortDefault)
+            var iterator: io_iterator_t = 0
 
-            var loaded: [(name: String, label: String)] = []
-            for file in files where file.hasSuffix(".plist") {
-                let fullPath = "\(path)/\(file)"
-                guard let dict = NSDictionary(contentsOfFile: fullPath) else { continue }
+            IORegistryEntryGetChildIterator(root, kIOServicePlane, &iterator)
 
-                let label = dict["Label"] as? String ?? file
-                if let machServices = dict["MachServices"] as? [String: Any] {
-                    for service in machServices.keys {
-                        loaded.append((name: service, label: label))
-                    }
-                }
+            var loaded: [(name: String, className: String)] = []
+            var service: io_object_t = IOIteratorNext(iterator)
+            while service != 0 {
+                var name = [CChar](repeating: 0, count: 128)
+                var className = [CChar](repeating: 0, count: 128)
+                IORegistryEntryGetName(service, &name)
+                IOObjectGetClass(service, &className)
+                loaded.append((
+                    name: String(cString: name),
+                    className: String(cString: className)
+                ))
+                IOObjectRelease(service)
+                service = IOIteratorNext(iterator)
             }
+            IOObjectRelease(iterator)
+            IOObjectRelease(root)
 
             DispatchQueue.main.async {
                 self.services = loaded
@@ -32,9 +40,9 @@ class XPCExplorerVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "XPC Services"
+        title = "IOKit"
         view.backgroundColor = .systemBackground
-        
+
         loadServices()
 
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -48,10 +56,9 @@ class XPCExplorerVC: UIViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
     }
-
 }
 
-extension XPCExplorerVC: UITableViewDataSource {
+extension IOKitBrowserVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return services.count
     }
@@ -60,7 +67,7 @@ extension XPCExplorerVC: UITableViewDataSource {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cell")
         let service = services[indexPath.row]
         cell.textLabel?.text = service.name
-        cell.detailTextLabel?.text = service.label
+        cell.detailTextLabel?.text = service.className
         return cell
     }
 }

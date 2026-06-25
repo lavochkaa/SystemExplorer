@@ -24,6 +24,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let tabBar = UITabBarController()
         tabBar.viewControllers = [processesNav, xpcNav]
 
+        let ioKitNav = UINavigationController(rootViewController: IOKitBrowserVC())
+        ioKitNav.tabBarItem = UITabBarItem(title: "IOKit", image: UIImage(systemName: "memorychip"), tag: 2)
+
+
         window = UIWindow(windowScene: windowScene)
         window?.rootViewController = tabBar
         window?.makeKeyAndVisible()
