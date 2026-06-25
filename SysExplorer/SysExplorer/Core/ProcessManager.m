@@ -59,7 +59,7 @@ extern int proc_pidinfo(int pid, int flavor, uint64_t arg, void *buffer, int buf
 
     NSMutableArray *result = [NSMutableArray array];
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < count; i++) {
         pid_t pid = pids[i];
 
         char pathBuffer[MAXPATHLEN];
