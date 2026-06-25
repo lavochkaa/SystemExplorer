@@ -27,6 +27,7 @@ class ProcessDetailVC: UIViewController {
 
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.dataSource = self
+        tableView.delegate = self
         view.addSubview(tableView)
 
         NSLayoutConstraint.activate([
@@ -39,7 +40,7 @@ class ProcessDetailVC: UIViewController {
 
     private func buildSections() {
         let mb = process.memoryBytes / 1024 / 1024
-        let files = ProcessManager.getOpenFiles(forPid: process.pid) as! [String]
+        let files = (ProcessManager.getOpenFiles(forPid: process.pid) as? [String]) ?? []
         let xmlString = ProcessManager.getEntitlementsForPID(process.pid) ?? ""
         let entitnlemetsKeys = parseEntitlementKeys(from: xmlString)
 
@@ -48,7 +49,8 @@ class ProcessDetailVC: UIViewController {
                 (key: "PID", value: "\(process.pid)"),
                 (key: "Name", value: process.name),
                 (key: "Threads", value: "\(process.threadCount)"),
-                (key: "Path", value: process.path ?? "unknown")
+                (key: "Path", value: process.path ?? "unknown"),
+                (key: "Inspect Binary", value: "→")
             ]),
             (title: "Memory", rows: [
                 (key: "RAM", value: "\(mb) MB")
@@ -59,7 +61,7 @@ class ProcessDetailVC: UIViewController {
     }
 }
 
-extension ProcessDetailVC: UITableViewDataSource {
+extension ProcessDetailVC: UITableViewDataSource, UITableViewDelegate{
 
     func numberOfSections(in tableView: UITableView) -> Int {
         return sections.count
@@ -78,8 +80,16 @@ extension ProcessDetailVC: UITableViewDataSource {
         let row = sections[indexPath.section].rows[indexPath.row]
         cell.textLabel?.text = row.key
         cell.detailTextLabel?.text = row.value
-        cell.selectionStyle = .none
+        cell.selectionStyle = row.key == "Inspect Binary" ? .default : .none
         return cell
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let row = sections[indexPath.section].rows[indexPath.row]
+        if row.key == "Inspect Binary", let path = process.path {
+            navigationController?.pushViewController(MachOInspectorVC(path: path), animated: true)
+        }
     }
 }
 
