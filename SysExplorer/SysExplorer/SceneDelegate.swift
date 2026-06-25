@@ -15,8 +15,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
     
+        let processesNav = UINavigationController(rootViewController: ViewController())
+        processesNav.tabBarItem = UITabBarItem(title: "Processes", image: UIImage(systemName: "cpu"), tag: 0)
+
+        let xpcNav = UINavigationController(rootViewController: XPCExplorerVC())
+        xpcNav.tabBarItem = UITabBarItem(title: "XPC", image: UIImage(systemName: "network"), tag: 1)
+
+        let tabBar = UITabBarController()
+        tabBar.viewControllers = [processesNav, xpcNav]
+
         window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = UINavigationController(rootViewController: ViewController())
+        window?.rootViewController = tabBar
         window?.makeKeyAndVisible()
     }
 
