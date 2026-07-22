@@ -14,7 +14,9 @@ iOS system monitor and internals explorer. Installs via TrollStore with extended
 </p>
 
 <p align="center">
-  <img src="assets/preview.png" width="300" />
+  <img src="assets/preview.png" width="260" />
+  <img src="assets/preview-2.png" width="260" />
+  <img src="assets/preview-3.png" width="260" />
 </p>
 
 ## Features
