@@ -2,3 +2,5 @@ CLAUDE.md
 .DS_Store
 *.xcuserstate
 buildServer.json
+.build/
+packages/
