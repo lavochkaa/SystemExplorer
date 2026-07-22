@@ -1,3 +1,7 @@
+> 🚧 **v2 in development** — building research toolkit features
+   > (XPC enumerator, entitlement diff, snapshot compare, anomaly heuristics).
+   > See branch [`v2-research-toolkit`](https://github.com/lavochkaa/SystemExplorer/tree/v2-research-toolkit) for progress.
+
 # SysExplorer
 
 iOS system monitor and internals explorer. Installs via TrollStore with extended entitlements.
