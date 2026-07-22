@@ -1,3 +1,5 @@
+# "🚧 v2 in development — see [v2-research-toolkit branch] for progress"
+
 # SysExplorer
 
 iOS system monitor and internals explorer. Installs via TrollStore with extended entitlements.
@@ -34,6 +36,26 @@ iOS system monitor and internals explorer. Installs via TrollStore with extended
 - Full IOKit registry traversal up to 3 levels deep
 - Shows name and class of every IOService
 - Indented hierarchy view
+
+## Roadmap — v2 Research Toolkit
+
+Evolving SysExplorer from a viewer into a **research toolkit** for spotting anomalies
+and attack surface on iOS. Still read-only, no process modification — see
+[Disclaimer](#disclaimer).
+
+- [ ] **XPC Interface Enumerator** — extract exported XPC methods per MachService by
+  parsing daemon binaries (`__TEXT.__text`, `LC_SYMTAB`, `__cstring`), map methods to
+  required client entitlements
+- [ ] **Entitlement Diff Tool** — compare entitlements between two processes, highlight
+  `com.apple.private.*`, export diff as JSON
+- [ ] **Snapshot & Compare** — save full system state (processes, IOKit registry,
+  MachServices) to SQLite, diff two snapshots (new / gone / changed)
+- [ ] **Anomaly Heuristics Engine** — flag suspicious patterns: high-RAM zero-thread
+  processes, ghost processes, orphan IOServices, suspicious entitlement combos, XPC
+  services without client checks, load command anomalies
+- [ ] **Export to JSON/CSV** on every screen
+- [ ] **URL scheme** `sysexplorer://` for linking directly to processes, IOKit nodes,
+  XPC services, and snapshots
 
 ## Stack
 
