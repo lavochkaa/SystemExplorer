@@ -7,6 +7,13 @@
 iOS system monitor and internals explorer. Installs via TrollStore with extended entitlements.
 
 <p align="center">
+  <img src="https://img.shields.io/badge/platform-iOS%2015%2B-lightgrey" alt="Platform" />
+  <img src="https://img.shields.io/badge/arch-arm64-lightgrey" alt="Architecture" />
+  <img src="https://img.shields.io/badge/Swift-5-orange" alt="Swift" />
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="License" />
+</p>
+
+<p align="center">
   <img src="assets/preview.png" width="300" />
 </p>
 
@@ -68,6 +75,22 @@ iOS system monitor and internals explorer. Installs via TrollStore with extended
 <key>com.apple.private.security.no-container</key>
 <true/>
 ```
+
+## Building from source
+
+Requires Xcode (arm64 iOS SDK) and [`ldid`](https://github.com/ProcursusTeam/ldid) for ad-hoc signing.
+
+```bash
+git clone https://github.com/lavochkaa/SystemExplorer.git
+cd SystemExplorer
+./build.sh
+```
+
+Produces a signed `.tipa` in `packages/`, ready to install via TrollStore.
+
+## License
+
+[MIT](LICENSE)
 
 ## Disclaimer
 
