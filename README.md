@@ -1,4 +1,4 @@
-🚧 ** v2 research toolkit** — building research toolkit features
+# 🚧 v2 research toolkit 
 
 # SysExplorer
 
