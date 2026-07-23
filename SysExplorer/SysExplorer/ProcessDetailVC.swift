@@ -101,7 +101,7 @@ extension ProcessDetailVC {
         let lines = xml.components(separatedBy: "\n")
         for line in lines {
             let trimed = line.trimmingCharacters(in: .whitespaces)
-            if trimed.hasPrefix("<key>") && trimed.hasSuffix("</key") {
+            if trimed.hasPrefix("<key>") && trimed.hasSuffix("</key>") {
                 let key = trimed.replacingOccurrences(of: "<key>", with: "").replacingOccurrences(of: "</key>", with: "")
                 keys.append(key)
             }
