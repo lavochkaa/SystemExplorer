@@ -4,10 +4,12 @@
 
 iOS system monitor and internals explorer. Installs via TrollStore with extended entitlements.
 
-<img src="https://img.shields.io/badge/platform-iOS%2015%2B-lightgrey" alt="Platform" />
-<img src="https://img.shields.io/badge/arch-arm64-lightgrey" alt="Architecture" />
-<img src="https://img.shields.io/badge/Swift-5-orange" alt="Swift" />
-<img src="https://img.shields.io/badge/license-MIT-blue" alt="License" />
+<p align="center">
+  <img src="https://img.shields.io/badge/platform-iOS%2015%2B-lightgrey" alt="Platform" />
+  <img src="https://img.shields.io/badge/arch-arm64-lightgrey" alt="Architecture" />
+  <img src="https://img.shields.io/badge/Swift-5-orange" alt="Swift" />
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="License" />
+</p>
 
 <p align="center">
   <img src="assets/preview.png" width="260" />
