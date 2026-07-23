@@ -63,15 +63,20 @@ extern int proc_pidinfo(int pid, int flavor, uint64_t arg, void *buffer, int buf
         pid_t pid = pids[i];
 
         char pathBuffer[MAXPATHLEN];
-        proc_pidpath(pid, pathBuffer,  sizeof(pathBuffer));
+        int pathLen = proc_pidpath(pid, pathBuffer, sizeof(pathBuffer));
 
         struct proc_taskinfo taskInfo;
         int ret = proc_pidinfo(pid, PROC_PIDTASKINFO, 0, &taskInfo, sizeof(taskInfo));
         
         SysProcessInfo *info = [[SysProcessInfo alloc] init];
         info.pid = pid;
-        info.name = [[NSString stringWithUTF8String:pathBuffer] lastPathComponent] ?: @"unknown";
-        info.path = [NSString  stringWithUTF8String:pathBuffer];
+        if (pathLen > 0) {
+            info.name = [[NSString stringWithUTF8String:pathBuffer] lastPathComponent] ?: @"unknown";
+            info.path = [NSString stringWithUTF8String:pathBuffer];
+        } else {
+            info.name = @"unknown";
+            info.path = @"unknown";
+        }
         info.memoryBytes = (ret > 0) ? taskInfo.pti_resident_size : 0;
         info.threadCount = (ret > 0) ? taskInfo.pti_threadnum : 0;
 
