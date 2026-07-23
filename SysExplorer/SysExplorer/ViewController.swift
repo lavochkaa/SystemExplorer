@@ -48,7 +48,7 @@ class ViewController: UIViewController {
         spinner.startAnimating()
 
         DispatchQueue.global().async {
-            let loaded = Array((ProcessManager.getAllProcesses() as! [SysProcessInfo]).prefix(10))
+            let loaded = Array((ProcessManager.getAllProcesses() as! [SysProcessInfo]))
             DispatchQueue.main.async {
                 self.processes = loaded
                 self.filteredProcesses = loaded
@@ -60,7 +60,7 @@ class ViewController: UIViewController {
 
     @objc private func refreshProcesses() {
     DispatchQueue.global().async {
-        let loaded = Array((ProcessManager.getAllProcesses() as! [SysProcessInfo]).prefix(10))
+        let loaded = Array((ProcessManager.getAllProcesses() as! [SysProcessInfo]))
         DispatchQueue.main.async {
             self.processes = loaded
             self.filteredProcesses = loaded
