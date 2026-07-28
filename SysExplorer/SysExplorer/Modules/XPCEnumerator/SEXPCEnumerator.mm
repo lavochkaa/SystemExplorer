@@ -90,4 +90,31 @@
     munmap(data, st.st_size);
     return strings;
 }
+
++ (NSArray<NSString *> *)daemonPlistPaths {
+    NSArray<NSString *> *searchDirs = @[
+        @"/System/Library/LaunchDaemons",
+        @"/Library/LaunchDaemons"
+    ];
+
+    NSMutableArray<NSString *> *result = [NSMutableArray array];
+
+    // Step 1: for each dir in searchDirs — list its contents with NSFileManager
+    for (NSString *dir in searchDirs) {
+        NSError *error = nil;
+        NSFileManager *fm = [NSFileManager defaultManager];
+        NSArray<NSString *> *entries = [fm contentsOfDirectoryAtPath:dir error:&error];
+
+        // Step 2: skip the dir entirely if listing fails (don't crash — just log and continue to the next dir)
+        if (entries == nil) { continue; }
+        // Step 3: filter entries down to ones whose pathExtension is "plist"
+        for (NSString *filename in entries) {
+            if (![[filename pathExtension] isEqualToString:@"plist"]) { continue; }
+            // Step 4: join dir + filename into a full path (stringByAppendingPathComponent:), append to result
+            [result addObject:[dir stringByAppendingPathComponent:filename]];
+        }
+    }
+
+    return result;
+}
 @end
