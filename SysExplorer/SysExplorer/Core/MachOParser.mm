@@ -101,7 +101,8 @@
                 return nil;
             }
             [segments addObject:name];
-        } else if (lc.cmd == LC_LOAD_DYLIB) {
+        } else if (lc.cmd == LC_LOAD_DYLIB || lc.cmd == LC_LOAD_WEAK_DYLIB ||
+                   lc.cmd == LC_REEXPORT_DYLIB || lc.cmd == LC_LOAD_UPWARD_DYLIB) {
             if (lc.cmdsize < sizeof(struct dylib_command)) {
                 munmap(data, size);
                 return nil;

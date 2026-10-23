@@ -79,7 +79,20 @@ int main() {
 
         validLibrary.back() = 'x';
         if (parse(validLibrary)) return 6;
+
+        const uint32_t dylibKinds[] = {LC_LOAD_WEAK_DYLIB, LC_REEXPORT_DYLIB, LC_LOAD_UPWARD_DYLIB};
+        for (uint32_t kind : dylibKinds) {
+            dylib_command command = library;
+            command.cmd = kind;
+            std::vector<uint8_t> bytes;
+            append(bytes, header);
+            append(bytes, command);
+            bytes.insert(bytes.end(), name, name + sizeof(name));
+            MachOInfo *info = parse(bytes);
+            if (!info || info.linkedLibraries.count != 1 ||
+                ![info.linkedLibraries[0] isEqualToString:@"lib.dyl"]) return 9;
+        }
     }
-    puts("8 Mach-O parser cases passed");
+    puts("9 Mach-O parser cases passed");
     return 0;
 }
