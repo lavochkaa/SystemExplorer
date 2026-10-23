@@ -5,4 +5,5 @@
 + (NSArray<NSString *> *)extractStrings:(NSString *)binaryPath;
 + (NSArray<NSString *> *)daemonPlistPaths;
 + (NSDictionary *)parserDaemonPlist:(NSString *)path;
++ (NSString *)labelFromPlist:(NSDictionary *)plist;
 @end

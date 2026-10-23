@@ -117,4 +117,14 @@
 
     return result;
 }
+
++ (NSDictionary *)parserDaemonPlist:(NSString *)path {
+    
+    return [NSDictionary dictionaryWithContentsOfFile:path];
+}
+
++ (NSString *)labelFromPlist:(NSDictionary *)plist {
+
+    return [plist objectForKey:@"Label"];
+}
 @end
