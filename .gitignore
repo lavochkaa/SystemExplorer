@@ -4,3 +4,4 @@ CLAUDE.md
 buildServer.json
 .build/
 packages/
+.agent/
