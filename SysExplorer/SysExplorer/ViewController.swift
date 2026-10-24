@@ -51,8 +51,7 @@ class ViewController: UIViewController {
             let loaded = Array((ProcessManager.getAllProcesses() as! [SysProcessInfo]))
             DispatchQueue.main.async {
                 self.processes = loaded
-                self.filteredProcesses = loaded
-                self.tableView.reloadData()
+                self.applySearchFilter()
                 self.spinner.stopAnimating()
             }
         }
@@ -63,8 +62,7 @@ class ViewController: UIViewController {
         let loaded = Array((ProcessManager.getAllProcesses() as! [SysProcessInfo]))
         DispatchQueue.main.async {
             self.processes = loaded
-            self.filteredProcesses = loaded
-            self.tableView.reloadData()
+            self.applySearchFilter()
             self.refreshControl.endRefreshing()
         }
     }
@@ -96,6 +94,10 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
 
 extension ViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
+        applySearchFilter()
+    }
+
+    private func applySearchFilter() {
         let query = searchController.searchBar.text ?? ""
         if query.isEmpty {
             filteredProcesses = processes
