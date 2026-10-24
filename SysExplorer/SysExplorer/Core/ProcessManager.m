@@ -1,6 +1,9 @@
 #import "ProcessManager.h"
 #include <Foundation/Foundation.h>
 #include <sys/sysctl.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
 
 // libproc.h is not in public iOS SDK, declare what we need manually
 extern int proc_listallpids(void *buffer, int buffersize);
@@ -113,13 +116,46 @@ extern int proc_pidinfo(int pid, int flavor, uint64_t arg, void *buffer, int buf
 }
 
 + (NSString *)getEntitlementsForPID:(pid_t)pid {
-    uint8_t buffer[8192];
-    int ret = csops(pid, CS_OPS_ENTITLEMENTS_BLOB, buffer, sizeof(buffer));
-    if (ret != 0) return @"No entitlements";
-    
+    // Entitlement blobs can exceed any fixed buffer (some system daemons carry
+    // more than 8 KB of entitlements), and csops succeeds without writing
+    // anything when the process is signed without entitlements. Start zeroed
+    // and grow the buffer when the kernel reports ERANGE.
+    size_t capacity = 8192;
+    uint8_t *buffer = calloc(1, capacity);
+    if (!buffer) return @"Failed to parse";
+
+    int ret = csops(pid, CS_OPS_ENTITLEMENTS_BLOB, buffer, capacity);
+    if (ret != 0 && errno == ERANGE) {
+        uint32_t needed;
+        memcpy(&needed, buffer + 4, sizeof(needed));
+        needed = ntohl(needed);
+        if (needed > capacity) {
+            uint8_t *grown = realloc(buffer, needed);
+            if (grown) {
+                buffer = grown;
+                capacity = needed;
+                memset(buffer, 0, capacity);
+                ret = csops(pid, CS_OPS_ENTITLEMENTS_BLOB, buffer, capacity);
+            }
+        }
+    }
+
+    if (ret != 0) {
+        free(buffer);
+        return @"No entitlements";
+    }
+
     // blob starts with 8-byte header, skip it
-    uint32_t length = ntohl(*(uint32_t *)(buffer + 4));
+    uint32_t length;
+    memcpy(&length, buffer + 4, sizeof(length));
+    length = ntohl(length);
+    if (length < 8 || length > capacity) {
+        free(buffer);
+        return @"No entitlements";
+    }
+
     NSData *data = [NSData dataWithBytes:buffer + 8 length:length - 8];
+    free(buffer);
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] ?: @"Failed to parse";
 }
 
