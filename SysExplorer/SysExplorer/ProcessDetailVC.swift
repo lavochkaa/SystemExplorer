@@ -95,16 +95,16 @@ extension ProcessDetailVC: UITableViewDataSource, UITableViewDelegate{
 
 extension ProcessDetailVC {
     private func parseEntitlementKeys(from xml: String) -> [String] {
-        guard !xml.isEmpty else { return ["No entitlemets"]}
+        guard !xml.isEmpty else { return ["No entitlements"] }
 
         var keys: [String] = []
-        let lines = xml.components(separatedBy: "\n")
-        for line in lines {
-            let trimed = line.trimmingCharacters(in: .whitespaces)
-            if trimed.hasPrefix("<key>") && trimed.hasSuffix("</key>") {
-                let key = trimed.replacingOccurrences(of: "<key>", with: "").replacingOccurrences(of: "</key>", with: "")
-                keys.append(key)
-            }
+        var searchRange = xml.startIndex..<xml.endIndex
+        while let keyStart = xml.range(of: "<key>", range: searchRange),
+              let keyEnd = xml.range(of: "</key>", range: keyStart.upperBound..<xml.endIndex) {
+            let key = xml[keyStart.upperBound..<keyEnd.lowerBound]
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            keys.append(key)
+            searchRange = keyEnd.upperBound..<xml.endIndex
         }
         return keys.isEmpty ? ["No entitlements"] : keys
     }
