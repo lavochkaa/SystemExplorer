@@ -42,7 +42,7 @@ class ProcessDetailVC: UIViewController {
         let mb = process.memoryBytes / 1024 / 1024
         let files = (ProcessManager.getOpenFiles(forPid: process.pid) as? [String]) ?? []
         let xmlString = ProcessManager.getEntitlementsForPID(process.pid) ?? ""
-        let entitnlemetsKeys = parseEntitlementKeys(from: xmlString)
+        let entitnlemetsKeys = EntitlementKeyParser.keys(from: xmlString)
 
         sections = [
             (title: "Info", rows: [
@@ -90,22 +90,5 @@ extension ProcessDetailVC: UITableViewDataSource, UITableViewDelegate{
         if row.key == "Inspect Binary", let path = process.path {
             navigationController?.pushViewController(MachOInspectorVC(path: path), animated: true)
         }
-    }
-}
-
-extension ProcessDetailVC {
-    private func parseEntitlementKeys(from xml: String) -> [String] {
-        guard !xml.isEmpty else { return ["No entitlements"] }
-
-        var keys: [String] = []
-        var searchRange = xml.startIndex..<xml.endIndex
-        while let keyStart = xml.range(of: "<key>", range: searchRange),
-              let keyEnd = xml.range(of: "</key>", range: keyStart.upperBound..<xml.endIndex) {
-            let key = xml[keyStart.upperBound..<keyEnd.lowerBound]
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-            keys.append(key)
-            searchRange = keyEnd.upperBound..<xml.endIndex
-        }
-        return keys.isEmpty ? ["No entitlements"] : keys
     }
 }
