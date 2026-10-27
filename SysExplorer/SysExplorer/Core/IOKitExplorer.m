@@ -15,7 +15,7 @@
 }
 
 + (void)collectEntries:(io_registry_entry_t)entry into:(NSMutableArray *)result depth:(int)depth maxDepth:(int)maxDepth {
-    if (depth > maxDepth) return;
+    if (depth >= maxDepth) return;
 
     io_iterator_t iterator = 0;
     if (IORegistryEntryGetChildIterator(entry, kIOServicePlane, &iterator) != KERN_SUCCESS) return;
