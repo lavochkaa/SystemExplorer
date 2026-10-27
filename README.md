@@ -90,11 +90,12 @@ cd SystemExplorer
 
 Produces a signed `.tipa` in `packages/`, ready to install via TrollStore.
 
-Run the Mach-O parser regression tests on macOS with Xcode command-line tools:
+Run the standalone regression tests on macOS with Xcode command-line tools:
 
 ```bash
 sh tests/run_macho_parser.sh
 sh tests/run_entitlement_key_parser.sh
+sh tests/run_process_manager.sh
 ```
 
 ## License
