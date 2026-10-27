@@ -54,15 +54,28 @@ extern int proc_pidinfo(int pid, int flavor, uint64_t arg, void *buffer, int buf
 @implementation ProcessManager
 
 + (NSArray<SysProcessInfo *> *)getAllProcesses {
-    // Fixed buffer to avoid blocking call with NULL on simulator
-    int maxPids = 1024;
-    pid_t *pids = malloc(maxPids * sizeof(pid_t));
-    int count = proc_listallpids(pids, maxPids * sizeof(pid_t));
-    if (count <= 0) { free(pids); return @[]; }
+    // A NULL buffer can block on the simulator. Grow only when the supplied
+    // buffer is full, so a larger process table does not silently lose PIDs.
+    size_t capacity = 1024;
+    pid_t *pids = malloc(capacity * sizeof(pid_t));
+    if (!pids) return @[];
+
+    int count;
+    for (;;) {
+        count = proc_listallpids(pids, (int)(capacity * sizeof(pid_t)));
+        if (count <= 0) { free(pids); return @[]; }
+        if ((size_t)count < capacity || capacity >= 65536) break;
+
+        size_t nextCapacity = capacity * 2;
+        pid_t *grown = realloc(pids, nextCapacity * sizeof(pid_t));
+        if (!grown) break; // Keep the valid partial result on allocation failure.
+        pids = grown;
+        capacity = nextCapacity;
+    }
 
     NSMutableArray *result = [NSMutableArray array];
 
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < count && (size_t)i < capacity; i++) {
         pid_t pid = pids[i];
 
         char pathBuffer[MAXPATHLEN];
