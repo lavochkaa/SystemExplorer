@@ -110,6 +110,7 @@ extern int proc_pidinfo(int pid, int flavor, uint64_t arg, void *buffer, int buf
     if (bufferSize <= 0) return @[];
 
     struct proc_fdinfo *fds = malloc(bufferSize);
+    if (!fds) return @[];
     int count = proc_pidinfo(pid, PROC_PIDLISTFDS, 0, fds, bufferSize);
     count /= sizeof(struct proc_fdinfo);
 
