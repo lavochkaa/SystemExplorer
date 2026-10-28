@@ -9,3 +9,7 @@ clang -fobjc-arc -Wall -Wextra -Werror -framework Foundation \
     "$root/SysExplorer/SysExplorer/Core/ProcessManager.m" \
     "$root/tests/ProcessManagerTests.m" -o "$binary"
 "$binary"
+
+clang -fobjc-arc -Wall -Wextra -Werror -framework Foundation \
+    "$root/tests/ProcessManagerAllocationTests.m" -o "$binary"
+"$binary"
