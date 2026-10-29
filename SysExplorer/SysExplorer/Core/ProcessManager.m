@@ -93,8 +93,8 @@ extern int proc_pidinfo(int pid, int flavor, uint64_t arg, void *buffer, int buf
             info.name = @"unknown";
             info.path = @"unknown";
         }
-        info.memoryBytes = (ret > 0) ? taskInfo.pti_resident_size : 0;
-        info.threadCount = (ret > 0) ? taskInfo.pti_threadnum : 0;
+        info.memoryBytes = (ret == (int)sizeof(taskInfo)) ? taskInfo.pti_resident_size : 0;
+        info.threadCount = (ret == (int)sizeof(taskInfo)) ? taskInfo.pti_threadnum : 0;
 
         [result addObject:info];
     }
